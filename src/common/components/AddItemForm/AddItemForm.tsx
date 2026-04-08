@@ -1,19 +1,17 @@
-// @flow
-import * as React from 'react';
-import {type ChangeEvent, useState} from "react";
+import {type ChangeEvent, type KeyboardEvent, useState} from "react";
 import {IconButton, TextField} from "@mui/material";
 import {AddBox} from "@mui/icons-material";
 
 type Props = {
   onAddItem: (title: string) => void
 };
-export const AddItemForm = (props: Props) => {
+export const AddItemForm = ({onAddItem}: Props) => {
   const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>( null)
 
   const addItemHandler = () => {
     if (title.trim() !== '') {
-      onAdditem(title.trim())
+      onAddItem(title.trim())
       setTitle('')
     } else {
       setError('Title is required')
