@@ -5,8 +5,8 @@ import {instance} from "@/shared/api/api-instance.ts";
 function App() {
 
   useEffect(() => {
-    instance.get('todo-list').then(response => {
-      console.log(response)
+    instance.get('todo-lists').then(response => {
+      console.log(response.data)
     });
   }, []);
 
