@@ -9,13 +9,11 @@ import {setTasks} from "@/entities/tasks/model/tasks-slice.ts";
 function App() {
   const todolists = useAppSelector(state => state.todolists)
   const tasks = useAppSelector(state => state.tasks)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
     getTodolists().then(response => {
       const todolists = response.data
       dispatch(setTodolists({todolists}));
