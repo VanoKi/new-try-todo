@@ -1,29 +1,35 @@
 import {useEffect, useState} from "react";
 import './App.css';
-import type {TodolistType} from "@/entities/todolists/model/types.ts";
 import {getTodolists} from "@/entities/todolists/api/todolists-api.ts";
 import {getTasks} from "@/entities/tasks/api/tasks-api.ts";
+import {useAppDispatch, useAppSelector} from "@/app/store.ts";
+import {setTodolists} from "@/entities/todolists/model/todolists-slice.ts";
+import {setTasks} from "@/entities/tasks/model/tasks-slice.ts";
 
 function App() {
-  const [todolists, setTodolists] = useState<TodolistType[]>([]);
-  // const [tasks, setTasks] = useState<Record<string, Task[]>>()
+  const todolists = useAppSelector(state => state.todolists)
+  const tasks = useAppSelector(state => state.tasks)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     setLoading(true)
     setError(null)
     getTodolists().then(response => {
-      setTodolists(response.data);
+      const todolists = response.data
+      dispatch(setTodolists({todolists}));
 
-      getTasks(response.data[0].id).then( (response) => {
-        console.log(response.data.items)
+      todolists.forEach(todolist => {
+        getTasks(todolist.id).then( (response) => {
+          dispatch(setTasks({todoListId: todolist.id, tasks: response.data.items}))
+        })
       })
 
     }).catch( e => {
       setError(e.message)
     }).finally(() => {setLoading(false)})
-  }, []);
+  }, [dispatch]);
 
   if (loading) {
     return <div>Loading...</div>
@@ -35,7 +41,12 @@ function App() {
 
   return (
     <>
-      {todolists.map(todolist => <div key={todolist.id}>{todolist.title}</div>)}
+      {todolists.map(todolist => <div key={todolist.id}>
+        <h3>{todolist.title}</h3>
+        <ul>
+          {tasks[todolist.id]?.map(task => <li key={task.id}>{task.title}</li>)}
+        </ul>
+      </div>)}
     </>
   );
 }
