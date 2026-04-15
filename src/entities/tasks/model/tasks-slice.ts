@@ -1,9 +1,15 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {TaskType} from "@/entities/tasks/model/types.ts";
 
+export type TasksStateType = {
+  [key: string]: TaskType[]
+}
+
+const initialState: TasksStateType = {};
+
 export const tasksSlice  = createSlice({
   name: 'tasks',
-  initialState: {},
+  initialState,
   reducers: {
     setTasks: (state, action: PayloadAction<{ tasks: TaskType[], todoListId: string }>) => {
       state[action.payload.todoListId] = action.payload.tasks;
