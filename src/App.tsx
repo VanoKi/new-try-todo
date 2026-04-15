@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import './App.css';
-import { useAppDispatch, useAppSelector } from '@/app/store.ts';
-import { getTasks } from '@/entities/tasks/api/tasks-api.ts';
-import { setTasks } from '@/entities/tasks/model/tasks-slice.ts';
-import { TaskItem } from '@/entities/tasks/ui/TaskItem.tsx';
-import { getTodolists } from '@/entities/todolists/api/todolists-api.ts';
-import { setTodolists } from '@/entities/todolists/model/todolists-slice.ts';
+import {useAppDispatch, useAppSelector} from '@/app/store.ts';
+import {getTasks} from '@/entities/tasks/api/tasks-api.ts';
+import {setTasks} from '@/entities/tasks/model/tasks-slice.ts';
+import {getTodolists} from '@/entities/todolists/api/todolists-api.ts';
+import {setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
+import {TodolistItem} from "@/entities/todolists/ui/TodolistItem.tsx";
+import {Container, Grid} from "@mui/material";
 
 function App() {
   const todolists = useAppSelector((state) => state.todolists);
@@ -43,18 +44,15 @@ function App() {
   }
 
   return (
-    <>
-      {todolists.map((todolist) => (
-        <div key={todolist.id}>
-          <h3>{todolist.title}</h3>
-          <ul>
-            {tasks[todolist.id]?.map((task) => (
-              <TaskItem key={task.id} task={task} />
-            ))}
-          </ul>
-        </div>
-      ))}
-    </>
+    <Container sx={{py: '40px'}} maxWidth={'lg'}>
+      <Grid container={true} spacing={4}>
+        {todolists.map((todolist) => (
+          <Grid key={todolist.id}>
+            <TodolistItem todolist={todolist} tasks={tasks[todolist.id] || [] }/>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }
 
