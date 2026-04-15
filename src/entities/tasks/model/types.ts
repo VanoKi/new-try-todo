@@ -9,10 +9,10 @@ export type TaskType = {
   todoListId: string;
   order: number;
   addedDate: string;
-}
+};
 
 export type GetTasksResponse = {
   items: TaskType[];
   totalCount: number;
   error: string | null;
-}
+};
