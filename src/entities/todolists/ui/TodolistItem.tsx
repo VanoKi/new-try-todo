@@ -3,20 +3,29 @@ import type {TodolistType} from "@/entities/todolists/model/types.ts";
 import type {TaskType} from "@/entities/tasks/model/types.ts";
 import {TaskItem} from "@/entities/tasks/ui/TaskItem.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {useAppDispatch} from "@/app/store.ts";
+import {removeTodolist} from "@/entities/todolists/model/todolists-slice.ts";
+import {removeTodolistFromServer} from "@/entities/todolists/api/todolists-api.ts";
 
 type Props = {
   todolist: TodolistType
   tasks: TaskType[]
-  removeTodolist: (todolistId: string) => void
 };
-export const TodolistItem = ({todolist,  tasks, removeTodolist}: Props) => {
+
+export const TodolistItem = ({todolist,  tasks}: Props) => {
+  const dispatch = useAppDispatch();
+  const removeTodolistHandler = () => {
+    removeTodolistFromServer(todolist.id).then(() => {
+      dispatch(removeTodolist({todolistId: todolist.id}))
+    })
+  }
   return (
     <Paper elevation={3}
            sx={{p: "20px", width: '300px', minHeight: "100px", position: 'relative'}}>
       <IconButton
-        onClick={() => removeTodolist(todolist.id)}
+        onClick={removeTodolistHandler}
         sx={{position: 'absolute', right: '5px', top: '5px'}}>
-        <DeleteIcon fontSize={'small'}/>
+        <DeleteIcon fontSize={'medium'}/>
       </IconButton>
       <Typography variant={"h5"} align={'center'} gutterBottom={true}>
         {todolist.title}

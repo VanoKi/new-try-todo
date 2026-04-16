@@ -22,8 +22,8 @@ export const TaskItem = ({ task }: Props) => {
   return (
     <ListItem
       secondaryAction={
-        <IconButton edge='end' aria-label='delete' onClick={deleteTaskHandler}>
-          <DeleteIcon />
+        <IconButton edge='end' aria-label='delete' onClick={deleteTaskHandler} size={'small'}>
+          <DeleteIcon/>
         </IconButton>
       }
       disablePadding

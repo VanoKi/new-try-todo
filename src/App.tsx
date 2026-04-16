@@ -3,16 +3,11 @@ import './App.css';
 import {useAppDispatch, useAppSelector} from '@/app/store.ts';
 import {getTasks} from '@/entities/tasks/api/tasks-api.ts';
 import {setTasks} from '@/entities/tasks/model/tasks-slice.ts';
-import {
-  createTodolist,
-  getTodolists,
-  removeTodolistFromServer
-} from '@/entities/todolists/api/todolists-api.ts';
-import {addTodolist, removeTodolist, setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
+import {createTodolist, getTodolists} from '@/entities/todolists/api/todolists-api.ts';
+import {addTodolist, setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
 import {TodolistItem} from "@/entities/todolists/ui/TodolistItem.tsx";
-import {Container, Grid} from "@mui/material";
+import {Box, Container, Grid} from "@mui/material";
 import {AddItemForm} from "@/shared/ui/AddItemForm.tsx";
-import { Box } from "@mui/material";
 
 function App() {
   const todolists = useAppSelector((state) => state.todolists);
@@ -56,11 +51,6 @@ function App() {
         dispatch(addTodolist({todolist}));
       });
   };
-  const removeTodolistHandler = (todolistId: string) => {
-    removeTodolistFromServer(todolistId).then(() => {
-      dispatch(removeTodolist({id: todolistId}))
-    })
-  }
 
   return (
     <Container sx={{py: '40px'}} maxWidth={'lg'}>
@@ -70,7 +60,7 @@ function App() {
       <Grid container={true} spacing={4}>
         {todolists.map((todolist) => (
           <Grid key={todolist.id}>
-            <TodolistItem todolist={todolist} tasks={tasks[todolist.id] || []} removeTodolist={removeTodolistHandler}/>
+            <TodolistItem todolist={todolist} tasks={tasks[todolist.id] || []}/>
           </Grid>
         ))}
       </Grid>
