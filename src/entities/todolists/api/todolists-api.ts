@@ -4,3 +4,7 @@ import { instance } from '@/shared/api/api-instance.ts';
 export const getTodolists = () => {
   return instance.get<TodolistType[]>('todo-lists');
 };
+
+export const createTodolist = (title: string) => {
+  return instance.post<{ item: TodolistType }>('todo-lists', { title });
+};

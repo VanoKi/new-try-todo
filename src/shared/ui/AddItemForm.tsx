@@ -53,8 +53,7 @@ export const AddItemForm = ({addItem, label}: Props) => {
         size={'small'}
       />
       <IconButton color={'primary'}
-                  onClick={() => {
-                  }}>
+                  onClick={addItemHandler}>
         <AddBoxIcon fontSize={'large'}/>
       </IconButton>
     </Box>

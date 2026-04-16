@@ -3,7 +3,7 @@ import './App.css';
 import {useAppDispatch, useAppSelector} from '@/app/store.ts';
 import {getTasks} from '@/entities/tasks/api/tasks-api.ts';
 import {setTasks} from '@/entities/tasks/model/tasks-slice.ts';
-import {getTodolists} from '@/entities/todolists/api/todolists-api.ts';
+import {createTodolist, getTodolists} from '@/entities/todolists/api/todolists-api.ts';
 import {setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
 import {TodolistItem} from "@/entities/todolists/ui/TodolistItem.tsx";
 import {Container, Grid} from "@mui/material";
@@ -42,6 +42,14 @@ function App() {
   if (error) {
     return <div>{error}</div>;
   }
+
+  const addTodolistHandler = (title: string) => {
+    createTodolist(title)
+      .then((response) => {
+        const todolist = response.data.data;
+        dispatch(setTodolists({ todolists: [todolist, ...todolists] }));
+      });
+  };
 
   return (
     <Container sx={{py: '40px'}} maxWidth={'lg'}>
