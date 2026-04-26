@@ -1,32 +1,68 @@
+import {useEffect, useState} from 'react';
 import './App.css';
-import {useAppDispatch, useAppSelector} from "@/app/hooks.ts";
-import {addTodolist} from "@/features/todolists/model/todolists-reducer.ts";
-import {Container, Grid} from "@mui/material";
-import {AddItemForm} from "@/common/components/AddItemForm/AddItemForm.tsx";
-import {nanoid} from "@reduxjs/toolkit";
-import {Todolist} from "@/features/todolists/ui/Todolist.tsx";
+import {useAppDispatch, useAppSelector} from '@/app/store.ts';
+import {getTasks} from '@/entities/tasks/api/tasks-api.ts';
+import {setTasks} from '@/entities/tasks/model/tasks-slice.ts';
+import {createTodolist, getTodolists} from '@/entities/todolists/api/todolists-api.ts';
+import {addTodolist, setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
+import {TodolistItem} from "@/entities/todolists/ui/TodolistItem.tsx";
+import {Box, Container, Grid} from "@mui/material";
+import {AddItemForm} from "@/shared/ui/AddItemForm.tsx";
 
 function App() {
-  const todolists = useAppSelector(state => state.todolists);
+  const todolists = useAppSelector((state) => state.todolists);
+  const tasks = useAppSelector((state) => state.tasks);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
-  const createTodolist = (title: string) => {
-    const newTodolist = {id: nanoid(), title, addedDate: '', order: 0}
-    dispatch(addTodolist({todolist: newTodolist}))
+  useEffect(() => {
+    getTodolists()
+      .then((response) => {
+        const todolists = response.data;
+        dispatch(setTodolists({ todolists }));
+
+        todolists.forEach((todolist) => {
+          getTasks(todolist.id).then((response) => {
+            dispatch(setTasks({ todoListId: todolist.id, tasks: response.data.items }));
+          });
+        });
+      })
+      .catch((e) => {
+        setError(e.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  const addTodolistHandler = (title: string) => {
+    createTodolist(title)
+      .then((response) => {
+        const todolist = response.data.data.item;
+        dispatch(addTodolist({todolist}));
+      });
   };
+
   return (
-    <Container fixed>
-      <Grid container style={{padding: '20px 0'}}>
-        <AddItemForm onAddItem={createTodolist}/>
-      </Grid>
-      <Grid container spacing={4}>
-        {todolists.map(tl => {
-          return (
-            <Grid  key={tl.id}>
-              <Todolist todolist={tl}/>
-            </Grid>
-          )
-        })}
+    <Container sx={{py: '40px'}} maxWidth={'lg'}>
+      <Box>
+        <AddItemForm addItem={addTodolistHandler}/>
+      </Box>
+      <Grid container={true} spacing={4}>
+        {todolists.map((todolist) => (
+          <Grid key={todolist.id}>
+            <TodolistItem todolist={todolist} tasks={tasks[todolist.id] || []}/>
+          </Grid>
+        ))}
       </Grid>
     </Container>
   );
