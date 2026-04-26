@@ -1,6 +1,7 @@
 import type {GetTasksResponse, TaskType} from '@/entities/tasks/model/types.ts';
 import { instance } from '@/shared/api/api-instance.ts';
 import type {BaseResponse} from "@/shared/api/types.ts";
+import type {UpdateTaskModel} from "@/entities/todolists/model/types.ts";
 
 export const getTasks = (todolistId: string) => {
   return instance.get<GetTasksResponse>(`/todo-lists/${todolistId}/tasks`);
@@ -14,6 +15,10 @@ export const createTask = ({todolistId, title}:{todolistId: string, title: strin
   return instance.post<BaseResponse<{item: TaskType}>>(`/todo-lists/${todolistId}/tasks`, {title})
 }
 
-export const chaneTaskStatusApi = ({todolistId, taskId, status}:{todolistId:string, taskId:string, status:number}) => {
-  return instance.put<BaseResponse<TaskType>>(`/todo-lists/${todolistId}/tasks/${taskId}`, {status})
+export const changeTaskStatusApi = ({todolistId, taskId, model}:{todolistId:string, taskId:string, model: UpdateTaskModel}) => {
+  return instance.put<BaseResponse<{item: TaskType}>>(`/todo-lists/${todolistId}/tasks/${taskId}`, model)
+}
+
+export const changeTaskTitleApi = ({todolistId, taskId, model}:{todolistId:string, taskId:string, model:UpdateTaskModel}) => {
+  return instance.put<BaseResponse<TaskType>>(`/todo-lists/${todolistId}/tasks/${taskId}`, model)
 }
