@@ -24,4 +24,4 @@ export const todolistsSlice = createSlice({
   },
 });
 
-export const { setTodolists, addTodolist, removeTodolist } = todolistsSlice.actions;
+export const { setTodolists, addTodolist, removeTodolist, changeTodolistTitle } = todolistsSlice.actions;

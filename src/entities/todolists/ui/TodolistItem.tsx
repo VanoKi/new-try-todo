@@ -4,8 +4,8 @@ import type {TaskType} from "@/entities/tasks/model/types.ts";
 import {TaskItem} from "@/entities/tasks/ui/TaskItem.tsx";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {useAppDispatch} from "@/app/store.ts";
-import {removeTodolist} from "@/entities/todolists/model/todolists-slice.ts";
-import {removeTodolistFromServer} from "@/entities/todolists/api/todolists-api.ts";
+import {changeTodolistTitle, removeTodolist} from "@/entities/todolists/model/todolists-slice.ts";
+import {changeTodolistTitleOnServer, removeTodolistFromServer} from "@/entities/todolists/api/todolists-api.ts";
 import {AddItemForm} from "@/shared/ui/AddItemForm.tsx";
 import {createTask} from "@/entities/tasks/api/tasks-api.ts";
 import {addTask} from "@/entities/tasks/model/tasks-slice.ts";
@@ -29,8 +29,9 @@ export const TodolistItem = ({todolist,  tasks}: Props) => {
     })
   }
 
-  const changeTodolistTitleHandler = () => {
-
+  const changeTodolistTitleHandler = (newTitle:string) => {
+    dispatch(changeTodolistTitle({todolistId: todolist.id, title: newTitle}))
+    changeTodolistTitleOnServer({todolistId: todolist.id, title: newTitle})
   }
 
   return (
@@ -42,7 +43,7 @@ export const TodolistItem = ({todolist,  tasks}: Props) => {
         <DeleteIcon fontSize={'medium'}/>
       </IconButton>
       <Typography variant={"h5"} align={'center'} gutterBottom={true}>
-        <EditableSpan value={todolist.title} onChange={}/>
+        <EditableSpan value={todolist.title} onChange={changeTodolistTitleHandler}/>
       </Typography>
       <AddItemForm addItem={addTaskHandler}/>
       <List>

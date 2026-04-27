@@ -15,5 +15,5 @@ export const removeTodolistFromServer = (todolistId: string) => {
 };
 
 export const changeTodolistTitleOnServer = ({todolistId, title}:{todolistId: string, title: string}) => {
-  return instance.put()
+  return instance.put<BaseResponse>(`todo-lists/${todolistId}`, {title})
 }
