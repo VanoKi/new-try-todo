@@ -9,6 +9,7 @@ import {removeTodolistFromServer} from "@/entities/todolists/api/todolists-api.t
 import {AddItemForm} from "@/shared/ui/AddItemForm.tsx";
 import {createTask} from "@/entities/tasks/api/tasks-api.ts";
 import {addTask} from "@/entities/tasks/model/tasks-slice.ts";
+import {EditableSpan} from "@/shared/ui/EditableSpan.tsx";
 
 type Props = {
   todolist: TodolistType
@@ -28,6 +29,10 @@ export const TodolistItem = ({todolist,  tasks}: Props) => {
     })
   }
 
+  const changeTodolistTitleHandler = () => {
+
+  }
+
   return (
     <Paper elevation={3}
            sx={{p: "20px", width: '300px', minHeight: "100px", position: 'relative'}}>
@@ -37,7 +42,7 @@ export const TodolistItem = ({todolist,  tasks}: Props) => {
         <DeleteIcon fontSize={'medium'}/>
       </IconButton>
       <Typography variant={"h5"} align={'center'} gutterBottom={true}>
-        {todolist.title}
+        <EditableSpan value={todolist.title} onChange={}/>
       </Typography>
       <AddItemForm addItem={addTaskHandler}/>
       <List>

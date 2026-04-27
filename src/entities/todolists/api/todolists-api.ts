@@ -13,3 +13,7 @@ export const createTodolist = (title: string) => {
 export const removeTodolistFromServer = (todolistId: string) => {
   return instance.delete<BaseResponse>(`todo-lists/${todolistId}`);
 };
+
+export const changeTodolistTitleOnServer = ({todolistId, title}:{todolistId: string, title: string}) => {
+  return instance.put()
+}

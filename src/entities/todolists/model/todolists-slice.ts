@@ -15,6 +15,12 @@ export const todolistsSlice = createSlice({
       const index = state.findIndex((tl) => tl.id === action.payload.todolistId);
       if (index > -1) state.splice(index, 1);
     },
+    changeTodolistTitle: (state, action: PayloadAction<{todolistId: string, title: string}>) => {
+      const index = state.findIndex(tl => tl.id === action.payload.todolistId)
+      if (index > -1) {
+        state[index].title = action.payload.title
+      }
+    }
   },
 });
 
