@@ -31,8 +31,12 @@ export const tasksSlice = createSlice({
         (t) => t.id === action.payload.id,
       );
       if (index > -1) state[action.payload.todoListId][index] = action.payload;
+    },
+    changeTaskTitle: (state, action:PayloadAction<TaskType>) => {
+      const index = state[action.payload.todoListId].findIndex(t => t.id === action.payload.id)
+      if (index > -1) state[action.payload.todoListId][index] = action.payload
     }
   },
 });
 
-export const { addTask, removeTask, setTasks, changeTaskStatus } = tasksSlice.actions;
+export const { addTask, removeTask, setTasks, changeTaskStatus, changeTaskTitle } = tasksSlice.actions;

@@ -2,8 +2,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {Checkbox, IconButton, ListItem, Typography} from '@mui/material';
 import type {TaskType} from '@/entities/tasks/model/types.ts';
 import {useAppDispatch} from "@/app/store.ts";
-import {changeTaskStatus, removeTask} from "@/entities/tasks/model/tasks-slice.ts";
-import {changeTaskStatusApi, removeTaskFromServer} from "@/entities/tasks/api/tasks-api.ts";
+import {changeTaskStatus, changeTaskTitle, removeTask} from "@/entities/tasks/model/tasks-slice.ts";
+import {changeTaskStatusApi, changeTaskTitleApi, removeTaskFromServer} from "@/entities/tasks/api/tasks-api.ts";
+import {EditableSpan} from "@/shared/ui/EditableSpan.tsx";
 
 type Props = {
   task: TaskType;
@@ -28,6 +29,11 @@ export const TaskItem = ({task}: Props) => {
     })
   }
 
+  const changeTaskTitleHandler = (newTitle:string) => {
+    const updatedTask = {...task, title: newTitle}
+    dispatch(changeTaskTitle(updatedTask))
+    changeTaskTitleApi({taskId: task.id, todolistId: task.todoListId, model: updatedTask})
+  }
 
   return (
     <ListItem
@@ -47,8 +53,9 @@ export const TaskItem = ({task}: Props) => {
           textDecoration: task.status === 2 ? 'line-through' : '',
           opacity: task.status === 2 ? 0.5 : 1,
         }}
+        component={'div'}
       >
-        {task.title}
+        <EditableSpan value={task.title} onChange={changeTaskTitleHandler}/>
       </Typography>
     </ListItem>
   );
