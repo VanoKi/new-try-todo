@@ -1,29 +1,29 @@
-import {useEffect, useState} from 'react';
-import './App.css';
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { instance } from "./api/api";
+import type { todolistType } from "./api/todolist.api";
+import "./App.css";
 
 function App() {
-  const [state, setState] = useState([]);
+  const [state, setState] = useState<todolistType[]>([]);
 
   useEffect(() => {
-    axios.get('https://social-network.samuraijs.com/api/1.1/todo-lists', {
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_AUTH_TOKEN}`
-      }
-    }).then(response => {
-      setState(response.data)
-    })
-  }, [])
+    instance.get("todo-lists").then((response) => {
+      setState(response.data);
+    });
+  }, []);
 
   return (
     <>
-      <section id='center'>
-        {state.map(todolist => {
+      <section id="center">
+        {state.map((todolist) => {
           return (
             <div key={todolist.id}>
-              {todolist.title}
+              <h4>
+                <span>{todolist.title}</span>
+                <span>X</span>
+              </h4>
             </div>
-          )
+          );
         })}
       </section>
     </>
