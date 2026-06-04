@@ -12,6 +12,12 @@ function App() {
     });
   }, []);
 
+  const deleteTodolistHandler = (todolistId: string) => {
+    instance
+      .delete(`todo-lists/${todolistId}`)
+      .then((res) => setState(res.data));
+  };
+
   return (
     <>
       <section id="center">
@@ -20,7 +26,13 @@ function App() {
             <div key={todolist.id}>
               <h4>
                 <span>{todolist.title}</span>
-                <span>X</span>
+                <button
+                  onClick={() => {
+                    deleteTodolistHandler(todolist.id);
+                  }}
+                >
+                  <span>X</span>
+                </button>
               </h4>
             </div>
           );
