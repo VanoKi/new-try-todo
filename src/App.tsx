@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { instance } from "./api/api";
 import type { todolistType } from "./api/todolist.api";
 import "./App.css";
-import { Input } from "../components/Input/Input";
+import { Input } from "@/components/Input/Input";
 
 function App() {
   const [state, setState] = useState<todolistType[]>([]);

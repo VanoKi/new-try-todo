@@ -16,6 +16,7 @@ export const Input = ({ placeholder, addItem }: InputProps) => {
             onClickHandler();
         } else if (e.key === "Escape") {
             e.preventDefault();
+            e.stopPropagation();
             setValue("");
         }
     }
