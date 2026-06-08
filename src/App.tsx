@@ -22,7 +22,13 @@ function App() {
   };
 
   const addTodolistHandler = (value: string) => {
-    console.log(value);
+    instance.post(`todo-lists`, { title: value }).then( res => {
+      if (res.data.resultCode === 0) {
+        setState([...state, res.data.data.item]);
+      }
+    }).catch(err => {
+      console.log(err);
+    });
   };
 
   return (
@@ -30,7 +36,7 @@ function App() {
       <section id="center">
         <Input 
         placeholder="Enter todo list title" 
-        onChange={addTodolistHandler}
+        addItem={addTodolistHandler}
         />
         {state.map((todolist) => {
           return (
