@@ -21,14 +21,21 @@ function App() {
     });
   };
 
+  const addTodolistHandler = (value: string) => {
+    console.log(value);
+  };
+
   return (
     <>
       <section id="center">
-        <Input />
+        <Input 
+        placeholder="Enter todo list title" 
+        onChange={addTodolistHandler}
+        />
         {state.map((todolist) => {
           return (
             <div key={todolist.id}>
-              <h4>
+              <h4 className="todolist-title">
                 <span>{todolist.title}</span>
                 <button
                   onClick={() => {

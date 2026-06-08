@@ -188,3 +188,14 @@
   max-width: 400px;
   margin: 0 auto;
 }
+
+.input-container input {
+  text-align: center;
+}
+
+.todolist-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
