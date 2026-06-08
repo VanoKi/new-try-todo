@@ -180,3 +180,11 @@
     border-right-color: var(--border);
   }
 }
+
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 auto;
+}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { instance } from "./api/api";
 import type { todolistType } from "./api/todolist.api";
 import "./App.css";
+import { Input } from "../components/Input/Input";
 
 function App() {
   const [state, setState] = useState<todolistType[]>([]);
@@ -13,14 +14,17 @@ function App() {
   }, []);
 
   const deleteTodolistHandler = (todolistId: string) => {
-    instance
-      .delete(`todo-lists/${todolistId}`)
-      .then((res) => setState(res.data));
+    instance.delete(`todo-lists/${todolistId}`).then((res) => {
+      if (res.data.resultCode === 0) {
+        setState(state.filter((tl) => tl.id !== todolistId));
+      }
+    });
   };
 
   return (
     <>
       <section id="center">
+        <Input />
         {state.map((todolist) => {
           return (
             <div key={todolist.id}>
