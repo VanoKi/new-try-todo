@@ -3,10 +3,11 @@ import React, { useState } from 'react'
 type EditableSpanProps = {
   title: string;
   onChange: (value: string) => void;
-  onEditModeChange: (value: boolean) => void;
+  deleteTodolistHandler: (todolistId: string) => void;
+  todolistId: string;
 }
 
-export const EditableSpan = ({title, onChange, onEditModeChange}: EditableSpanProps) => {
+export const EditableSpan = ({ title, onChange, deleteTodolistHandler, todolistId }: EditableSpanProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(title);
   const onDoubleClickHandler = () => {
@@ -15,7 +16,7 @@ export const EditableSpan = ({title, onChange, onEditModeChange}: EditableSpanPr
   const onBlurHandler = () => {
     setIsEditing(false);
     onChange(value);
-    onEditModeChange(false);
+    setIsEditing(false);
   }
   const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -28,22 +29,29 @@ export const EditableSpan = ({title, onChange, onEditModeChange}: EditableSpanPr
   return (
     <>
       {isEditing ? (
-        <input 
-        type="text" 
-        value={value} 
-        onChange={(e) => setValue(e.target.value)} 
-        onBlur={onBlurHandler}
-        autoFocus
-        onKeyDown={onKeyDownHandler}
-        onFocus={() => onEditModeChange(true)}
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={onBlurHandler}
+          autoFocus
+          onKeyDown={onKeyDownHandler}
         />
       ) : (
-        <span 
-        onDoubleClick={onDoubleClickHandler}
+        <span
+          onDoubleClick={onDoubleClickHandler}
         >
-            {title}
-            </span>
+          {title}
+        </span>
       )}
-    </>
-  )
-}
+      <button
+        onClick={() => {
+          deleteTodolistHandler(todolistId);
+        }}
+      disabled={isEditing}
+    >
+      X
+    </button>
+  </>
+);
+};

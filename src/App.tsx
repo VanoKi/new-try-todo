@@ -7,7 +7,6 @@ import { EditableSpan } from "@/components/EditableSpan/EditableSpan";
 
 function App() {
   const [state, setState] = useState<todolistType[]>([]);
-  const [editingTodolistId, setEditingTodolistId] = useState<string | null>(null);
 
   useEffect(() => {
     instance.get("todo-lists").then((response) => {
@@ -55,16 +54,9 @@ function App() {
                 <EditableSpan 
                 title={todolist.title} 
                 onChange={(value) => changeTodolistTitleHandler({id: todolist.id, title: value})} 
-                onEditModeChange={(value) => setEditingTodolistId(value ? todolist.id : null)}
+                deleteTodolistHandler={deleteTodolistHandler}
+                todolistId={todolist.id}
                 />
-                <button
-                  onClick={() => {
-                    deleteTodolistHandler(todolist.id);
-                  }}
-                  disabled={editingTodolistId === todolist.id}
-                >
-                  <span>X</span>
-                </button>
               </h4>
             </div>
           );
