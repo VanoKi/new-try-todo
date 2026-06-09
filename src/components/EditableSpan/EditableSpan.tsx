@@ -48,10 +48,10 @@ export const EditableSpan = ({ title, onChange, deleteTodolistHandler, todolistI
         onClick={() => {
           deleteTodolistHandler(todolistId);
         }}
-      disabled={isEditing}
-    >
-      X
-    </button>
-  </>
-);
+        disabled={isEditing}
+      >
+        X
+      </button>
+    </>
+  );
 };
