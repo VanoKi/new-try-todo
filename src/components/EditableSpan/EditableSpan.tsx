@@ -3,11 +3,11 @@ import React, { useState } from 'react'
 type EditableSpanProps = {
   title: string;
   onChange: (value: string) => void;
-  deleteTodolistHandler: (todolistId: string) => void;
+  onDelete: (todolistId: string) => void;
   todolistId: string;
 }
 
-export const EditableSpan = ({ title, onChange, deleteTodolistHandler, todolistId }: EditableSpanProps) => {
+export const EditableSpan = ({ title, onChange, onDelete, todolistId }: EditableSpanProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(title);
   const onDoubleClickHandler = () => {
@@ -46,7 +46,7 @@ export const EditableSpan = ({ title, onChange, deleteTodolistHandler, todolistI
       )}
       <button
         onClick={() => {
-          deleteTodolistHandler(todolistId);
+          onDelete(todolistId);
         }}
         disabled={isEditing}
       >

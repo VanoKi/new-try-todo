@@ -11,6 +11,11 @@ function App() {
   useEffect(() => {
     instance.get("todo-lists").then((response) => {
       setState(response.data);
+      state.map((tl) => {
+        instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
+          console.log(response.data);
+        });
+      });
     });
   }, []);
 
@@ -54,7 +59,7 @@ function App() {
                 <EditableSpan 
                 title={todolist.title} 
                 onChange={(value) => changeTodolistTitleHandler({id: todolist.id, title: value})} 
-                deleteTodolistHandler={deleteTodolistHandler}
+                onDelete={deleteTodolistHandler}
                 todolistId={todolist.id}
                 />
               </h4>
