@@ -15,7 +15,6 @@ function App() {
       setTodolists(response.data);
       response.data.map((tl: todolistType) => {
         instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
-          console.log(response.data.items);
           setTasks(prev => ([...prev, ...response.data.items]));
         });
       });
@@ -56,52 +55,62 @@ function App() {
     });
   };
 
-  const deleteTaskHandler = (taskId: string) => {
-    console.log(taskId);
+  const deleteTaskHandler = ({taskId, todolistId}: {taskId: string, todolistId: string}) => {
+    instance.delete(`todo-lists/${todolistId}/tasks/${taskId}`).then(res => {
+      if (res.data.resultCode === 0) {
+        setTasks(prev => prev.filter(task => task.id !== taskId));
+      }
+    });
   }
 
-  const changeTaskTitleHandler = ({ id, title }: { id: string, title: string }) => {
-    console.log(id, title);
+  const changeTaskTitleHandler = ({ taskId, title, todolistId }: { taskId: string, title: string, todolistId: string }) => {
+    instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, { title }).then(res => {
+      if (res.data.resultCode === 0) {
+        setTasks(prev => prev.map(task => task.id === taskId ? { ...task, title } : task));
+      }
+    });
   }
 
-    return (
-      <>
-        <section id="center">
-          <Input
-            placeholder="Enter todo list title"
-            addItem={addTodolistHandler}
-          />
-          {todolists.map((todolist) => {
-            return (
-              <div key={todolist.id}>
-                <h4 className="todolist-title">
-                  <EditableSpan
-                    title={todolist.title}
-                    onChange={(value) => changeTodolistTitleHandler({ id: todolist.id, title: value })}
-                    onDelete={deleteTodolistHandler}
-                    todolistId={todolist.id}
-                  />
-                </h4>
-                <Input
-                  placeholder="Enter task title"
-                  addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
+  return (
+    <>
+      <section id="center">
+        <Input
+          placeholder="Enter todo list title"
+          addItem={addTodolistHandler}
+        />
+        {todolists.map((todolist) => {
+          return (
+            <div key={todolist.id}>
+              <h4 className="todolist-title">
+                <EditableSpan
+                  title={todolist.title}
+                  onChange={(value) => changeTodolistTitleHandler({ id: todolist.id, title: value })}
+                  onDelete={deleteTodolistHandler}
+                  todolistId={todolist.id}
                 />
-                {tasks.filter((task) => task.todoListId === todolist.id).map((task) => {
-                  return (
+              </h4>
+              <Input
+                placeholder="Enter task title"
+                addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
+              />
+              {tasks.filter((task) => task.todoListId === todolist.id).map((task) => {
+                return (
+                  <div key={task.id}>
                     <EditableSpan
                       title={task.title}
-                      onChange={(value) => changeTaskTitleHandler({ id: task.id, title: value })}
-                      onDelete={deleteTaskHandler}
+                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, title: value, todolistId: todolist.id })}
+                      onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
                       todolistId={todolist.id}
                     />
-                  );
-                })}
-              </div>
-            );
-          })}
-        </section>
-      </>
-    );
-  }
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </section>
+    </>
+  );
+}
 
-  export default App;
+export default App;
