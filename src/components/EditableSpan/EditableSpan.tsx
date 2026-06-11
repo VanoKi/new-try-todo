@@ -5,9 +5,11 @@ type EditableSpanProps = {
   onChange: (value: string) => void;
   onDelete: (todolistId: string) => void;
   todolistId: string;
+  status?: number;
+  onStatusChange?: (newStatus: number) => void;
 }
 
-export const EditableSpan = ({ title, onChange, onDelete, todolistId }: EditableSpanProps) => {
+export const EditableSpan = ({ title, onChange, onDelete, todolistId, status, onStatusChange }: EditableSpanProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(title);
   const onDoubleClickHandler = () => {
@@ -26,6 +28,7 @@ export const EditableSpan = ({ title, onChange, onDelete, todolistId }: Editable
       setValue(title);
     }
   }
+
   return (
     <>
       {isEditing ? (
@@ -38,20 +41,25 @@ export const EditableSpan = ({ title, onChange, onDelete, todolistId }: Editable
           onKeyDown={onKeyDownHandler}
         />
       ) : (
-        <span
-          onDoubleClick={onDoubleClickHandler}
-        >
-          {title}
-        </span>
+        <>
+          {status != null && (
+            <input 
+            type="checkbox" 
+            checked={status === 2} 
+            onChange={() => {onStatusChange?.(status === 2 ? 0 : 2);}} 
+            />
+          )}
+          <span onDoubleClick={onDoubleClickHandler}>{title}</span>
+          <button
+            onClick={() => {
+              onDelete(todolistId);
+            }}
+            disabled={isEditing}
+          >
+            X
+          </button>
+        </>
       )}
-      <button
-        onClick={() => {
-          onDelete(todolistId);
-        }}
-        disabled={isEditing}
-      >
-        X
-      </button>
     </>
   );
 };

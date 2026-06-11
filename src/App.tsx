@@ -70,6 +70,13 @@ function App() {
       }
     });
   }
+  const changeTaskStatusHandler = ({body, todolistId, taskId }: { taskId: string, body: taskType, todolistId: string }) => {
+    instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, body ).then(res => {
+      if (res.data.resultCode === 0) {
+        setTasks(tasks.map(task => task.id === taskId ? { ...task, ...body } : task));
+      }
+    });
+  }
 
   return (
     <>
@@ -93,18 +100,29 @@ function App() {
                 placeholder="Enter task title"
                 addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
               />
+              <ul>
               {tasks.filter((task) => task.todoListId === todolist.id).map((task) => {
+
+                const onStatusChange = (newStatus: number) => {
+                  const body = {
+                    ...task, status: newStatus
+                  }
+                  changeTaskStatusHandler({body, todolistId: todolist.id, taskId: task.id});
+                }
                 return (
-                  <div key={task.id}>
+                  <li key={task.id}>
                     <EditableSpan
                       title={task.title}
                       onChange={(value) => changeTaskTitleHandler({ taskId: task.id, title: value, todolistId: todolist.id })}
                       onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
                       todolistId={todolist.id}
+                      status={task.status}
+                      onStatusChange={onStatusChange}
                     />
-                  </div>
+                  </li>
                 );
               })}
+              </ul>
             </div>
           );
         })}
