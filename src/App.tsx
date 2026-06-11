@@ -12,11 +12,15 @@ function App() {
 
   useEffect(() => {
     instance.get("todo-lists").then((response) => {
-      setTodolists(response.data);
-      response.data.map((tl: todolistType) => {
-        instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
-          setTasks(prev => ([...prev, ...response.data.items]));
+      const todolists = response.data;
+      setTodolists(todolists);
+      const promises = todolists.map((tl: todolistType) => {
+        return instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
+          return response.data.items;
         });
+      });
+      Promise.all(promises).then((tasks) => {
+        setTasks(tasks.flat());
       });
     });
   }, []);
