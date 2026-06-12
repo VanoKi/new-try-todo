@@ -11,3 +11,7 @@ export type taskType = {
     order: number
     addedDate: string
 };
+
+export type taskTypeState = {
+    [key: string]: taskType[];
+}

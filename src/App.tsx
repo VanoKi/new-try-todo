@@ -4,23 +4,20 @@ import type { todolistType } from "./api/todolist.types";
 import "./App.css";
 import { Input } from "@/components/Input/Input";
 import { EditableSpan } from "@/components/EditableSpan/EditableSpan";
-import type { taskType } from "./api/tasks.types";
+import type { taskType, taskTypeState } from "./api/tasks.types";
 
 function App() {
   const [todolists, setTodolists] = useState<todolistType[]>([]);
-  const [tasks, setTasks] = useState<taskType[]>([]);
+  const [tasks, setTasks] = useState<taskTypeState>({});
 
   useEffect(() => {
     instance.get("todo-lists").then((response) => {
       const todolists = response.data;
       setTodolists(todolists);
-      const promises = todolists.map((tl: todolistType) => {
-        return instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
-          return response.data.items;
+      todolists.forEach((tl: todolistType) => {
+        instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
+          setTasks(prev => ({...prev, [tl.id]: response.data.items}));
         });
-      });
-      Promise.all(promises).then((tasks) => {
-        setTasks(tasks.flat());
       });
     });
   }, []);
@@ -54,7 +51,7 @@ function App() {
   const addTaskHandler = ({ value, todolistId }: { value: string, todolistId: string }) => {
     instance.post(`todo-lists/${todolistId}/tasks`, { title: value }).then(res => {
       if (res.data.resultCode === 0) {
-        setTasks(prev => ([res.data.data.item, ...prev]));
+        setTasks(prev => ({...prev, [todolistId]: [...prev[todolistId], res.data.data.item]}));
       }
     });
   };
@@ -62,7 +59,7 @@ function App() {
   const deleteTaskHandler = ({taskId, todolistId}: {taskId: string, todolistId: string}) => {
     instance.delete(`todo-lists/${todolistId}/tasks/${taskId}`).then(res => {
       if (res.data.resultCode === 0) {
-        setTasks(prev => prev.filter(task => task.id !== taskId));
+        setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.filter(task => task.id !== taskId) || []}));
       }
     });
   }
@@ -70,14 +67,14 @@ function App() {
   const changeTaskTitleHandler = ({ taskId, title, todolistId }: { taskId: string, title: string, todolistId: string }) => {
     instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, { title }).then(res => {
       if (res.data.resultCode === 0) {
-        setTasks(prev => prev.map(task => task.id === taskId ? { ...task, title } : task));
+        setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, title } : task) || []}));
       }
     });
   }
   const changeTaskStatusHandler = ({body, todolistId, taskId }: { taskId: string, body: taskType, todolistId: string }) => {
     instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, body ).then(res => {
       if (res.data.resultCode === 0) {
-        setTasks(tasks.map(task => task.id === taskId ? { ...task, ...body } : task));
+        setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, ...body } : task) || []}));
       }
     });
   }
@@ -105,7 +102,7 @@ function App() {
                 addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
               />
               <ul>
-              {tasks.filter((task) => task.todoListId === todolist.id).map((task) => {
+              {tasks[todolist.id]?.map((task: taskType) => {
 
                 const onStatusChange = (newStatus: number) => {
                   const body = {
