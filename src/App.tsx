@@ -5,68 +5,67 @@ import "./App.css";
 import { Input } from "@/components/Input/Input";
 import { EditableSpan } from "@/components/EditableSpan/EditableSpan";
 import type { taskType, taskTypeState } from "./api/tasks.types";
+import { todolistApi } from "./api/todolist.api";
+import { tasksApi } from "./api/tasks.api";
 
 function App() {
   const [todolists, setTodolists] = useState<todolistType[]>([]);
   const [tasks, setTasks] = useState<taskTypeState>({});
 
   useEffect(() => {
-    instance.get("todo-lists").then((response) => {
-      const todolists = response.data;
+    todolistApi.getTodolists().then((todolists) => {
       setTodolists(todolists);
       todolists.forEach((tl: todolistType) => {
-        instance.get(`todo-lists/${tl.id}/tasks`).then((response) => {
-          setTasks(prev => ({...prev, [tl.id]: response.data.items}));
+        tasksApi.getTasks(tl.id).then((tasks) => {
+          setTasks(prev => ({...prev, [tl.id]: tasks}));
         });
       });
     });
   }, []);
 
   const deleteTodolistHandler = (todolistId: string) => {
-    instance.delete(`todo-lists/${todolistId}`).then((res) => {
-      if (res.data.resultCode === 0) {
+    todolistApi.deleteTodolist(todolistId).then((res) => {
+      if (res.resultCode === 0) {
         setTodolists(todolists.filter((tl) => tl.id !== todolistId));
       }
     });
   };
 
   const addTodolistHandler = (value: string) => {
-    instance.post(`todo-lists`, { title: value }).then(res => {
-      if (res.data.resultCode === 0) {
-        setTodolists([...todolists, res.data.data.item]);
+    todolistApi.createTodolist(value).then((res) => {
+      if (res.resultCode === 0) {
+        setTodolists([...todolists, res.data.item]);
       }
-    }).catch(err => {
-      console.log(err);
     });
   };
 
   const changeTodolistTitleHandler = ({ id, title }: { id: string, title: string }) => {
-    instance.put(`todo-lists/${id}`, { title }).then(res => {
-      if (res.data.resultCode === 0) {
+    todolistApi.updateTodolist(id, title).then((res) => {
+      if (res.resultCode === 0) {
         setTodolists(todolists.map(tl => tl.id === id ? { ...tl, title } : tl));
       }
     });
   };
 
   const addTaskHandler = ({ value, todolistId }: { value: string, todolistId: string }) => {
-    instance.post(`todo-lists/${todolistId}/tasks`, { title: value }).then(res => {
-      if (res.data.resultCode === 0) {
-        setTasks(prev => ({...prev, [todolistId]: [...prev[todolistId], res.data.data.item]}));
+    tasksApi.createTask(todolistId, value).then((res) => {
+      if (res.resultCode === 0) {
+        setTasks(prev => ({...prev, [todolistId]: [...prev[todolistId], res.data.item]}));
       }
     });
   };
 
   const deleteTaskHandler = ({taskId, todolistId}: {taskId: string, todolistId: string}) => {
-    instance.delete(`todo-lists/${todolistId}/tasks/${taskId}`).then(res => {
-      if (res.data.resultCode === 0) {
+    tasksApi.deleteTask(todolistId, taskId).then((res) => {
+      if (res.resultCode === 0) {
         setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.filter(task => task.id !== taskId) || []}));
       }
     });
   }
 
   const changeTaskTitleHandler = ({ taskId, title, todolistId }: { taskId: string, title: string, todolistId: string }) => {
-    instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, { title }).then(res => {
-      if (res.data.resultCode === 0) {
+    tasksApi.updateTask(todolistId, taskId, title).then((res) => {
+      if (res.resultCode === 0) {
         setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, title } : task) || []}));
       }
     });
