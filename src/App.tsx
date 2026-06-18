@@ -63,16 +63,16 @@ function App() {
     });
   }
 
-  const changeTaskTitleHandler = ({ taskId, title, todolistId }: { taskId: string, title: string, todolistId: string }) => {
-    tasksApi.updateTask(todolistId, taskId, title).then((res) => {
+  const changeTaskTitleHandler = ({ taskId, body, todolistId }: { taskId: string, body: taskType, todolistId: string }) => {
+    tasksApi.updateTask(todolistId, taskId, body).then((res) => {
       if (res.resultCode === 0) {
-        setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, title } : task) || []}));
+        setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, ...body } : task) || []}));
       }
     });
   }
   const changeTaskStatusHandler = ({body, todolistId, taskId }: { taskId: string, body: taskType, todolistId: string }) => {
-    instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, body ).then(res => {
-      if (res.data.resultCode === 0) {
+    tasksApi.updateTask(todolistId, taskId, body).then((res) => {
+      if (res.resultCode === 0) {
         setTasks(prev => ({...prev, [todolistId]: prev[todolistId]?.map(task => task.id === taskId ? { ...task, ...body } : task) || []}));
       }
     });
@@ -113,7 +113,7 @@ function App() {
                   <li key={task.id}>
                     <EditableSpan
                       title={task.title}
-                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, title: value, todolistId: todolist.id })}
+                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, body: { title: value }, todolistId: todolist.id })}
                       onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
                       todolistId={todolist.id}
                       status={task.status}
