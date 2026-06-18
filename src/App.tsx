@@ -113,7 +113,7 @@ function App() {
                   <li key={task.id}>
                     <EditableSpan
                       title={task.title}
-                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, body: { title: value }, todolistId: todolist.id })}
+                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, body: { ...task, title: value }, todolistId: todolist.id })}
                       onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
                       todolistId={todolist.id}
                       status={task.status}
