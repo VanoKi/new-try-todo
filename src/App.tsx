@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { instance } from "./api/api";
-import type { todolistType } from "./api/todolist.types";
-import "./App.css";
-import { Input } from "@/components/Input/Input";
 import { EditableSpan } from "@/components/EditableSpan/EditableSpan";
+import { Input } from "@/components/Input/Input";
+import { useEffect, useState } from "react";
+import { tasksApi } from "./api/tasks.api";
 import type { taskType, taskTypeState } from "./api/tasks.types";
 import { todolistApi } from "./api/todolist.api";
-import { tasksApi } from "./api/tasks.api";
+import type { todolistType } from "./api/todolist.types";
+import "./App.css";
 
 function App() {
   const [todolists, setTodolists] = useState<todolistType[]>([]);
