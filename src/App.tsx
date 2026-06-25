@@ -1,6 +1,7 @@
 import { EditableSpan } from "@/components/EditableSpan/EditableSpan";
 import { Input } from "@/components/Input/Input";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { tasksApi } from "./api/tasks.api";
 import type { taskType, taskTypeState } from "./api/tasks.types";
 import { todolistApi } from "./api/todolist.api";
@@ -8,19 +9,23 @@ import type { todolistType } from "./api/todolist.types";
 import "./App.css";
 
 function App() {
-  const [todolists, setTodolists] = useState<todolistType[]>([]);
   const [tasks, setTasks] = useState<taskTypeState>({});
 
-  useEffect(() => {
-    todolistApi.getTodolists().then((todolists) => {
-      setTodolists(todolists);
-      todolists.forEach((tl: todolistType) => {
-        tasksApi.getTasks(tl.id).then((tasks) => {
-          setTasks(prev => ({...prev, [tl.id]: tasks}));
-        });
-      });
-    });
-  }, []);
+  // useEffect(() => {
+  //   todolistApi.getTodolists().then((todolists) => {
+  //     setTodolists(todolists);
+  //     todolists.forEach((tl: todolistType) => {
+  //       tasksApi.getTasks(tl.id).then((tasks) => {
+  //         setTasks(prev => ({...prev, [tl.id]: tasks}));
+  //       });
+  //     });
+  //   });
+  // }, []);
+
+  const { data: todolists } = useQuery({
+    queryKey: ['todolists'],
+    queryFn: () => todolistApi.getTodolists(),
+  });
 
   const deleteTodolistHandler = (todolistId: string) => {
     todolistApi.deleteTodolist(todolistId).then((res) => {
@@ -84,45 +89,45 @@ function App() {
           placeholder="Enter todo list title"
           addItem={addTodolistHandler}
         />
-        {todolists.map((todolist) => {
+        {todolists?.map((todolist: todolistType) => {
           return (
-            <div key={todolist.id}>
-              <h4 className="todolist-title">
-                <EditableSpan
-                  title={todolist.title}
-                  onChange={(value) => changeTodolistTitleHandler({ id: todolist.id, title: value })}
-                  onDelete={deleteTodolistHandler}
-                  todolistId={todolist.id}
-                />
-              </h4>
-              <Input
-                placeholder="Enter task title"
-                addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
-              />
-              <ul>
-              {tasks[todolist.id]?.map((task: taskType) => {
+            // <div key={todolist.id}>
+            //   <h4 className="todolist-title">
+            //     <EditableSpan
+            //       title={todolist.title}
+            //       onChange={(value) => changeTodolistTitleHandler({ id: todolist.id, title: value })}
+            //       onDelete={deleteTodolistHandler}
+            //       todolistId={todolist.id}
+            //     />
+            //   </h4>
+            //   <Input
+            //     placeholder="Enter task title"
+            //     addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
+            //   />
+            //   <ul>
+            //   {tasks[todolist.id]?.map((task: taskType) => {
 
-                const onStatusChange = (newStatus: number) => {
-                  const body = {
-                    ...task, status: newStatus
-                  }
-                  changeTaskStatusHandler({body, todolistId: todolist.id, taskId: task.id});
-                }
-                return (
-                  <li key={task.id}>
-                    <EditableSpan
-                      title={task.title}
-                      onChange={(value) => changeTaskTitleHandler({ taskId: task.id, body: { ...task, title: value }, todolistId: todolist.id })}
-                      onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
-                      todolistId={todolist.id}
-                      status={task.status}
-                      onStatusChange={onStatusChange}
-                    />
-                  </li>
-                );
-              })}
-              </ul>
-            </div>
+            //     const onStatusChange = (newStatus: number) => {
+            //       const body = {
+            //         ...task, status: newStatus
+            //       }
+            //       changeTaskStatusHandler({body, todolistId: todolist.id, taskId: task.id});
+            //     }
+            //     return (
+            //       <li key={task.id}>
+            //         <EditableSpan
+            //           title={task.title}
+            //           onChange={(value) => changeTaskTitleHandler({ taskId: task.id, body: { ...task, title: value }, todolistId: todolist.id })}
+            //           onDelete={(todoListId) => deleteTaskHandler({taskId: task.id, todolistId: todoListId})}
+            //           todolistId={todolist.id}
+            //           status={task.status}
+            //           onStatusChange={onStatusChange}
+            //         />
+            //       </li>
+            //     );
+            //   })}
+            //   </ul>
+            // </div>
           );
         })}
       </section>
