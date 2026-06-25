@@ -1,5 +1,5 @@
-import { instance } from "./api";
-import type { taskType } from "./tasks.types";
+import { instance } from './api';
+import type { taskType } from './tasks.types';
 
 export const tasksApi = {
   getTasks: async (todolistId: string) => {
@@ -10,8 +10,8 @@ export const tasksApi = {
     const response = await instance.post(`todo-lists/${todolistId}/tasks`, { title });
     return response.data;
   },
-  updateTask: async (todolistId: string, taskId: string, body: taskType)  => {
-    const response = await instance.put(`todo-lists/${todolistId}/tasks/${taskId}`,  body);
+  updateTask: async (todolistId: string, taskId: string, body: taskType) => {
+    const response = await instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, body);
     return response.data;
   },
   deleteTask: async (todolistId: string, taskId: string) => {

@@ -1,12 +1,12 @@
-import { instance } from "./api";
+import { instance } from './api';
 
 export const todolistApi = {
   getTodolists: async () => {
-    const response = await instance.get("todo-lists");
+    const response = await instance.get('todo-lists');
     return response.data;
   },
   createTodolist: async (title: string) => {
-    const response = await instance.post("todo-lists", { title });
+    const response = await instance.post('todo-lists', { title });
     return response.data;
   },
   updateTodolist: async (id: string, title: string) => {
