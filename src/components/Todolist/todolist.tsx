@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tasksApi } from '@/api/tasks.api';
 import type { taskType } from '@/api/tasks.types';
 import type { todolistType } from '@/api/todolist.types';
@@ -14,13 +14,15 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     queryKey: ['tasks', todolist.id],
     queryFn: () => tasksApi.getTasks(todolist.id),
   });
-
+  const queryClient = useQueryClient();
+  const deleteTodolistMutation = useMutation({
+    mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', todolist.id] });
+    },
+  });
   const deleteTodolistHandler = (todolistId: string) => {
-    todolistApi.deleteTodolist(todolistId).then((res) => {
-      if (res.resultCode === 0) {
-        setTodolists(todolists.filter((tl) => tl.id !== todolistId));
-      }
-    });
+    deleteTodolistMutation.mutate(todolistId);
   };
 
   const changeTodolistTitleHandler = ({ id, title }: { id: string; title: string }) => {
