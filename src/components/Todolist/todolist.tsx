@@ -18,7 +18,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
   const deleteTodolistMutation = useMutation({
     mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', todolist.id] });
+      queryClient.invalidateQueries({ queryKey: ['todolists'] });
     },
   });
   const deleteTodolistHandler = (todolistId: string) => {
