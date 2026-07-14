@@ -25,12 +25,15 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     deleteTodolistMutation.mutate(todolistId);
   };
 
+  const updateTodolistMutation = useMutation({
+    mutationFn: ({ id, title }: { id: string; title: string }) => todolistApi.updateTodolist(id, title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todolists'] });
+    },
+  });
+
   const changeTodolistTitleHandler = ({ id, title }: { id: string; title: string }) => {
-    todolistApi.updateTodolist(id, title).then((res) => {
-      if (res.resultCode === 0) {
-        setTodolists(todolists.map((tl) => (tl.id === id ? { ...tl, title } : tl)));
-      }
-    });
+    updateTodolistMutation.mutate({ id, title });
   };
 
   const addTaskHandler = ({ value, todolistId }: { value: string; todolistId: string }) => {
