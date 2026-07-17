@@ -74,7 +74,8 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       taskId: string;
       todolistId: string;
     }) => tasksApi.deleteTask(todolistId, taskId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] }),
   });
 
   const deleteTaskHandler = ({
@@ -97,7 +98,8 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       body: taskType;
       todolistId: string;
     }) => tasksApi.updateTask(todolistId, taskId, body),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] }),
   });
 
   const changeTaskTitleHandler = ({
