@@ -66,7 +66,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     addTaskMutation.mutate({ value, todolistId });
   };
 
-  const deleteTaskMutatioin = useMutation({
+  const deleteTaskMutation = useMutation({
     mutationFn: ({
       taskId,
       todolistId,
@@ -85,7 +85,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     taskId: string;
     todolistId: string;
   }) => {
-    deleteTaskMutatioin.mutate({ todolistId, taskId });
+    deleteTaskMutation.mutate({ todolistId, taskId });
   };
 
   const updateTaskMutation = useMutation({
