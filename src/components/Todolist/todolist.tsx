@@ -33,10 +33,6 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     },
   });
 
-  // const updateTaskMutation = useMutation({
-  //   mutationFn:
-  // })
-
   const addTaskMutation = useMutation({
     mutationFn: ({
       value,
@@ -70,6 +66,17 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     addTaskMutation.mutate({ value, todolistId });
   };
 
+  const deleteTaskMutatioin = useMutation({
+    mutationFn: ({
+      taskId,
+      todolistId,
+    }: {
+      taskId: string;
+      todolistId: string;
+    }) => tasksApi.deleteTask(todolistId, taskId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
   const deleteTaskHandler = ({
     taskId,
     todolistId,
@@ -77,15 +84,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     taskId: string;
     todolistId: string;
   }) => {
-    tasksApi.deleteTask(todolistId, taskId).then((res) => {
-      if (res.resultCode === 0) {
-        setTasks((prev) => ({
-          ...prev,
-          [todolistId]:
-            prev[todolistId]?.filter((task) => task.id !== taskId) || [],
-        }));
-      }
-    });
+    deleteTaskMutatioin.mutate({ todolistId, taskId });
   };
 
   const changeTaskTitleHandler = ({
