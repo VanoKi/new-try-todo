@@ -1,24 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tasksApi } from '@/api/tasks.api';
-import type { taskType } from '@/api/tasks.types';
-import type { todolistType } from '@/api/todolist.types';
-import { EditableSpan } from '../EditableSpan/EditableSpan';
-import { Input } from '../Input/Input';
-import { todolistApi } from '@/api/todolist.api';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { tasksApi } from "@/api/tasks.api";
+import type { taskType } from "@/api/tasks.types";
+import type { todolistType } from "@/api/todolist.types";
+import { EditableSpan } from "../EditableSpan/EditableSpan";
+import { Input } from "../Input/Input";
+import { todolistApi } from "@/api/todolist.api";
 
 type TodolistProps = {
   todolist: todolistType;
 };
 export const Todolist = ({ todolist }: TodolistProps) => {
   const { data: tasks } = useQuery({
-    queryKey: ['tasks', todolist.id],
+    queryKey: ["tasks", todolist.id],
     queryFn: () => tasksApi.getTasks(todolist.id),
   });
   const queryClient = useQueryClient();
   const deleteTodolistMutation = useMutation({
     mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      queryClient.invalidateQueries({ queryKey: ["todolists"] });
     },
   });
   const deleteTodolistHandler = (todolistId: string) => {
@@ -26,30 +26,63 @@ export const Todolist = ({ todolist }: TodolistProps) => {
   };
 
   const updateTodolistMutation = useMutation({
-    mutationFn: ({ id, title }: { id: string; title: string }) => todolistApi.updateTodolist(id, title),
+    mutationFn: ({ id, title }: { id: string; title: string }) =>
+      todolistApi.updateTodolist(id, title),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      queryClient.invalidateQueries({ queryKey: ["todolists"] });
     },
   });
 
-  const changeTodolistTitleHandler = ({ id, title }: { id: string; title: string }) => {
+  // const updateTaskMutation = useMutation({
+  //   mutationFn:
+  // })
+
+  const addTaskMutation = useMutation({
+    mutationFn: ({
+      value,
+      todolistId,
+    }: {
+      value: string;
+      todolistId: string;
+    }) => tasksApi.createTask(todolistId, value),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] });
+    },
+  });
+
+  const changeTodolistTitleHandler = ({
+    id,
+    title,
+  }: {
+    id: string;
+    title: string;
+  }) => {
     updateTodolistMutation.mutate({ id, title });
   };
 
-  const addTaskHandler = ({ value, todolistId }: { value: string; todolistId: string }) => {
-    tasksApi.createTask(todolistId, value).then((res) => {
-      if (res.resultCode === 0) {
-        setTasks((prev) => ({ ...prev, [todolistId]: [...prev[todolistId], res.data.item] }));
-      }
-    });
+  const addTaskHandler = ({
+    value,
+    todolistId,
+  }: {
+    value: string;
+    todolistId: string;
+  }) => {
+    addTaskMutation.mutate({ value, todolistId });
   };
 
-  const deleteTaskHandler = ({ taskId, todolistId }: { taskId: string; todolistId: string }) => {
+  const deleteTaskHandler = ({
+    taskId,
+    todolistId,
+  }: {
+    taskId: string;
+    todolistId: string;
+  }) => {
     tasksApi.deleteTask(todolistId, taskId).then((res) => {
       if (res.resultCode === 0) {
         setTasks((prev) => ({
           ...prev,
-          [todolistId]: prev[todolistId]?.filter((task) => task.id !== taskId) || [],
+          [todolistId]:
+            prev[todolistId]?.filter((task) => task.id !== taskId) || [],
         }));
       }
     });
@@ -69,8 +102,9 @@ export const Todolist = ({ todolist }: TodolistProps) => {
         setTasks((prev) => ({
           ...prev,
           [todolistId]:
-            prev[todolistId]?.map((task) => (task.id === taskId ? { ...task, ...body } : task)) ||
-            [],
+            prev[todolistId]?.map((task) =>
+              task.id === taskId ? { ...task, ...body } : task,
+            ) || [],
         }));
       }
     });
@@ -89,24 +123,27 @@ export const Todolist = ({ todolist }: TodolistProps) => {
         setTasks((prev) => ({
           ...prev,
           [todolistId]:
-            prev[todolistId]?.map((task) => (task.id === taskId ? { ...task, ...body } : task)) ||
-            [],
+            prev[todolistId]?.map((task) =>
+              task.id === taskId ? { ...task, ...body } : task,
+            ) || [],
         }));
       }
     });
   };
   return (
     <div key={todolist.id}>
-      <h4 className='todolist-title'>
+      <h4 className="todolist-title">
         <EditableSpan
           title={todolist.title}
-          onChange={(value) => changeTodolistTitleHandler({ id: todolist.id, title: value })}
+          onChange={(value) =>
+            changeTodolistTitleHandler({ id: todolist.id, title: value })
+          }
           onDelete={deleteTodolistHandler}
           todolistId={todolist.id}
         />
       </h4>
       <Input
-        placeholder='Enter task title'
+        placeholder="Enter task title"
         addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
       />
       <ul>
@@ -116,7 +153,11 @@ export const Todolist = ({ todolist }: TodolistProps) => {
               ...task,
               status: newStatus,
             };
-            changeTaskStatusHandler({ body, todolistId: todolist.id, taskId: task.id });
+            changeTaskStatusHandler({
+              body,
+              todolistId: todolist.id,
+              taskId: task.id,
+            });
           };
           return (
             <li key={task.id}>
