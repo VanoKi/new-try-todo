@@ -5,18 +5,19 @@ import type { todolistType } from './api/todolist.types';
 import './App.css';
 import { Todolist } from './components/Todolist/todolist';
 import { useMutation } from '@tanstack/react-query';
+import { queryKeys } from './api/queryKeys';
 
 function App() {
   const queryClient = useQueryClient();
   const { data: todolists } = useQuery({
-    queryKey: ['todolists'],
+    queryKey: queryKeys.todolists,
     queryFn: () => todolistApi.getTodolists(),
   });
 
   const addTodolistMutation = useMutation({
     mutationFn: (value: string) => todolistApi.createTodolist(value),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.todolists});
     },
     onError: (error) => {
       console.log(error);

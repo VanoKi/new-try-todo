@@ -5,20 +5,21 @@ import type { todolistType } from "@/api/todolist.types";
 import { EditableSpan } from "../EditableSpan/EditableSpan";
 import { Input } from "../Input/Input";
 import { todolistApi } from "@/api/todolist.api";
+import { queryKeys } from "@/api/queryKeys";
 
 type TodolistProps = {
   todolist: todolistType;
 };
 export const Todolist = ({ todolist }: TodolistProps) => {
   const { data: tasks } = useQuery({
-    queryKey: ["tasks", todolist.id],
+    queryKey: queryKeys.tasks(todolist.id),
     queryFn: () => tasksApi.getTasks(todolist.id),
   });
   const queryClient = useQueryClient();
   const deleteTodolistMutation = useMutation({
     mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.todolists});
     },
   });
   const deleteTodolistHandler = (todolistId: string) => {
@@ -29,7 +30,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     mutationFn: ({ id, title }: { id: string; title: string }) =>
       todolistApi.updateTodolist(id, title),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
     },
   });
 
@@ -42,7 +43,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       todolistId: string;
     }) => tasksApi.createTask(todolistId, value),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) });
     },
   });
 
@@ -75,7 +76,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       todolistId: string;
     }) => tasksApi.deleteTask(todolistId, taskId),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) }),
   });
 
   const deleteTaskHandler = ({
@@ -99,7 +100,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       todolistId: string;
     }) => tasksApi.updateTask(todolistId, taskId, body),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["tasks", todolist.id] }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) }),
   });
 
   const changeTaskTitleHandler = ({
