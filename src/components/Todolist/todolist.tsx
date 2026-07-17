@@ -87,6 +87,19 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     deleteTaskMutatioin.mutate({ todolistId, taskId });
   };
 
+  const updateTaskMutation = useMutation({
+    mutationFn: ({
+      taskId,
+      body,
+      todolistId,
+    }: {
+      taskId: string;
+      body: taskType;
+      todolistId: string;
+    }) => tasksApi.updateTask(todolistId, taskId, body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
   const changeTaskTitleHandler = ({
     taskId,
     body,
@@ -96,17 +109,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     body: taskType;
     todolistId: string;
   }) => {
-    tasksApi.updateTask(todolistId, taskId, body).then((res) => {
-      if (res.resultCode === 0) {
-        setTasks((prev) => ({
-          ...prev,
-          [todolistId]:
-            prev[todolistId]?.map((task) =>
-              task.id === taskId ? { ...task, ...body } : task,
-            ) || [],
-        }));
-      }
-    });
+    updateTaskMutation.mutate({ taskId, todolistId, body });
   };
   const changeTaskStatusHandler = ({
     body,
@@ -117,18 +120,9 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     body: taskType;
     todolistId: string;
   }) => {
-    tasksApi.updateTask(todolistId, taskId, body).then((res) => {
-      if (res.resultCode === 0) {
-        setTasks((prev) => ({
-          ...prev,
-          [todolistId]:
-            prev[todolistId]?.map((task) =>
-              task.id === taskId ? { ...task, ...body } : task,
-            ) || [],
-        }));
-      }
-    });
+    updateTaskMutation.mutate({ taskId, todolistId, body });
   };
+
   return (
     <div key={todolist.id}>
       <h4 className="todolist-title">
