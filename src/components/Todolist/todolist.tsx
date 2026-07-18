@@ -1,9 +1,7 @@
-import { queryKeys } from "@/api/queryKeys";
 import type { taskType } from "@/api/tasks.types";
-import { todolistApi } from "@/api/todolist.api";
 import type { todolistType } from "@/api/todolist.types";
 import { useTasks } from "@/hooks/useTasks";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTodolists } from "@/hooks/useTodolists";
 import { EditableSpan } from "../EditableSpan/EditableSpan";
 import { Input } from "../Input/Input";
 
@@ -11,36 +9,8 @@ type TodolistProps = {
   todolist: todolistType;
 };
 export const Todolist = ({ todolist }: TodolistProps) => {
-
+  const { deleteTodolistMutation, updateTodolistMutation } = useTodolists()
   const { tasks, addTaskMutation, deleteTaskMutation, updateTaskMutation } = useTasks(todolist.id)
-  const queryClient = useQueryClient();
-  const deleteTodolistMutation = useMutation({
-    mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
-    },
-  });
-  const deleteTodolistHandler = (todolistId: string) => {
-    deleteTodolistMutation.mutate(todolistId);
-  };
-
-  const updateTodolistMutation = useMutation({
-    mutationFn: ({ id, title }: { id: string; title: string }) =>
-      todolistApi.updateTodolist(id, title),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
-    },
-  });
-
-  const changeTodolistTitleHandler = ({
-    id,
-    title,
-  }: {
-    id: string;
-    title: string;
-  }) => {
-    updateTodolistMutation.mutate({ id, title });
-  };
 
   const changeTaskTitleHandler = ({
     taskId,
@@ -62,14 +32,14 @@ export const Todolist = ({ todolist }: TodolistProps) => {
   };
 
   return (
-    <div key={todolist.id}>
+    <div>
       <h4 className="todolist-title">
         <EditableSpan
           title={todolist.title}
           onChange={(value) =>
-            changeTodolistTitleHandler({ id: todolist.id, title: value })
+            updateTodolistMutation.mutate({ id: todolist.id, title: value })
           }
-          onDelete={deleteTodolistHandler}
+          onDelete={() => deleteTodolistMutation.mutate(todolist.id)}
           todolistId={todolist.id}
         />
       </h4>
