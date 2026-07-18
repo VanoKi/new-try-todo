@@ -1,70 +1,21 @@
-import {useEffect, useState} from 'react';
+import { Input } from '@/components/Input/Input';
+import type { todolistType } from './api/todolist.types';
 import './App.css';
-import {useAppDispatch, useAppSelector} from '@/app/store.ts';
-import {getTasks} from '@/entities/tasks/api/tasks-api.ts';
-import {setTasks} from '@/entities/tasks/model/tasks-slice.ts';
-import {createTodolist, getTodolists} from '@/entities/todolists/api/todolists-api.ts';
-import {addTodolist, setTodolists} from '@/entities/todolists/model/todolists-slice.ts';
-import {TodolistItem} from "@/entities/todolists/ui/TodolistItem.tsx";
-import {Box, Container, Grid} from "@mui/material";
-import {AddItemForm} from "@/shared/ui/AddItemForm.tsx";
+import { Todolist } from './components/Todolist/todolist';
+import { useTodolists } from './hooks/useTodolists';
 
 function App() {
-  const todolists = useAppSelector((state) => state.todolists);
-  const tasks = useAppSelector((state) => state.tasks);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    getTodolists()
-      .then((response) => {
-        const todolists = response.data;
-        dispatch(setTodolists({ todolists }));
-
-        todolists.forEach((todolist) => {
-          getTasks(todolist.id).then((response) => {
-            dispatch(setTasks({ todoListId: todolist.id, tasks: response.data.items }));
-          });
-        });
-      })
-      .catch((e) => {
-        setError(e.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [dispatch]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  const addTodolistHandler = (title: string) => {
-    createTodolist(title)
-      .then((response) => {
-        const todolist = response.data.data.item;
-        dispatch(addTodolist({todolist}));
-      });
-  };
+  const { todolists, addTodolistMutation } = useTodolists()
 
   return (
-    <Container sx={{py: '40px'}} maxWidth={'lg'}>
-      <Box>
-        <AddItemForm addItem={addTodolistHandler}/>
-      </Box>
-      <Grid container={true} spacing={4}>
-        {todolists.map((todolist) => (
-          <Grid key={todolist.id}>
-            <TodolistItem todolist={todolist} tasks={tasks[todolist.id] || []}/>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <>
+      <section id='center'>
+        <Input placeholder='Enter todo list title' addItem={(value) => addTodolistMutation.mutate(value)} />
+        {todolists?.map((todolist: todolistType) => {
+          return <Todolist key={todolist.id} todolist={todolist} />;
+        })}
+      </section>
+    </>
   );
 }
 
