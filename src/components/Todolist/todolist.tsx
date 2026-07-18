@@ -4,32 +4,14 @@ import { useTasks } from "@/hooks/useTasks";
 import { useTodolists } from "@/hooks/useTodolists";
 import { EditableSpan } from "../EditableSpan/EditableSpan";
 import { Input } from "../Input/Input";
+import { TaskItem } from "../TaskItem/TaskItem";
 
 type TodolistProps = {
   todolist: todolistType;
 };
 export const Todolist = ({ todolist }: TodolistProps) => {
   const { deleteTodolistMutation, updateTodolistMutation } = useTodolists()
-  const { tasks, addTaskMutation, deleteTaskMutation, updateTaskMutation } = useTasks(todolist.id)
-
-  const changeTaskTitleHandler = ({
-    taskId,
-    body,
-  }: {
-    taskId: string;
-    body: taskType;
-  }) => {
-    updateTaskMutation.mutate({ taskId, body });
-  };
-  const changeTaskStatusHandler = ({
-    body,
-    taskId,
-  }: {
-    taskId: string;
-    body: taskType;
-  }) => {
-    updateTaskMutation.mutate({ taskId, body });
-  };
+  const { tasks, addTaskMutation } = useTasks(todolist.id)
 
   return (
     <div>
@@ -49,34 +31,14 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       />
       <ul>
         {(tasks ?? []).map((task: taskType) => {
-          const onStatusChange = (newStatus: number) => {
-            const body = {
-              ...task,
-              status: newStatus,
-            };
-            changeTaskStatusHandler({
-              body,
-              taskId: task.id,
-            });
-          };
+
           return (
-            <li key={task.id}>
-              <EditableSpan
-                title={task.title}
-                onChange={(value) =>
-                  changeTaskTitleHandler({
-                    taskId: task.id,
-                    body: { ...task, title: value },
-                  })
-                }
-                onDelete={() =>
-                  deleteTaskMutation.mutate(task.id)
-                }
-                todolistId={todolist.id}
-                status={task.status}
-                onStatusChange={onStatusChange}
-              />
-            </li>
+            <TaskItem
+              key={task.id}
+              task={task}
+              todolistId={todolist.id}
+            />
+
           );
         })}
       </ul>
