@@ -1,20 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { tasksApi } from "@/api/tasks.api";
+import { queryKeys } from "@/api/queryKeys";
 import type { taskType } from "@/api/tasks.types";
+import { todolistApi } from "@/api/todolist.api";
 import type { todolistType } from "@/api/todolist.types";
+import { useTasks } from "@/hooks/useTasks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditableSpan } from "../EditableSpan/EditableSpan";
 import { Input } from "../Input/Input";
-import { todolistApi } from "@/api/todolist.api";
-import { queryKeys } from "@/api/queryKeys";
 
 type TodolistProps = {
   todolist: todolistType;
 };
 export const Todolist = ({ todolist }: TodolistProps) => {
-  const { data: tasks } = useQuery({
-    queryKey: queryKeys.tasks(todolist.id),
-    queryFn: () => tasksApi.getTasks(todolist.id),
-  });
+  
+  const {tasks, addTaskMutation, deleteTaskMutation, updateTaskMutation} = useTasks(todolist.id)
   const queryClient = useQueryClient();
   const deleteTodolistMutation = useMutation({
     mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
@@ -34,19 +32,6 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     },
   });
 
-  const addTaskMutation = useMutation({
-    mutationFn: ({
-      value,
-      todolistId,
-    }: {
-      value: string;
-      todolistId: string;
-    }) => tasksApi.createTask(todolistId, value),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) });
-    },
-  });
-
   const changeTodolistTitleHandler = ({
     id,
     title,
@@ -57,73 +42,37 @@ export const Todolist = ({ todolist }: TodolistProps) => {
     updateTodolistMutation.mutate({ id, title });
   };
 
-  const addTaskHandler = ({
-    value,
-    todolistId,
-  }: {
-    value: string;
-    todolistId: string;
-  }) => {
-    addTaskMutation.mutate({ value, todolistId });
+  const addTaskHandler = (
+    value: string
+  ) => {
+    addTaskMutation.mutate(value)
   };
 
-  const deleteTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      todolistId,
-    }: {
-      taskId: string;
-      todolistId: string;
-    }) => tasksApi.deleteTask(todolistId, taskId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) }),
-  });
-
-  const deleteTaskHandler = ({
-    taskId,
-    todolistId,
-  }: {
-    taskId: string;
-    todolistId: string;
-  }) => {
-    deleteTaskMutation.mutate({ todolistId, taskId });
+  const deleteTaskHandler = (
+    taskId: string
+ ) => {
+    deleteTaskMutation.mutate(taskId);
   };
-
-  const updateTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      body,
-      todolistId,
-    }: {
-      taskId: string;
-      body: taskType;
-      todolistId: string;
-    }) => tasksApi.updateTask(todolistId, taskId, body),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolist.id) }),
-  });
 
   const changeTaskTitleHandler = ({
     taskId,
     body,
-    todolistId,
   }: {
     taskId: string;
     body: taskType;
     todolistId: string;
   }) => {
-    updateTaskMutation.mutate({ taskId, todolistId, body });
+    updateTaskMutation.mutate({ taskId, body });
   };
   const changeTaskStatusHandler = ({
     body,
-    todolistId,
     taskId,
   }: {
     taskId: string;
     body: taskType;
     todolistId: string;
   }) => {
-    updateTaskMutation.mutate({ taskId, todolistId, body });
+    updateTaskMutation.mutate({ taskId, body });
   };
 
   return (
@@ -140,7 +89,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
       </h4>
       <Input
         placeholder="Enter task title"
-        addItem={(value) => addTaskHandler({ value, todolistId: todolist.id })}
+        addItem={(value) => addTaskHandler(value)}
       />
       <ul>
         {(tasks ?? []).map((task: taskType) => {
@@ -167,7 +116,7 @@ export const Todolist = ({ todolist }: TodolistProps) => {
                   })
                 }
                 onDelete={(todoListId) =>
-                  deleteTaskHandler({ taskId: task.id, todolistId: todoListId })
+                  deleteTaskHandler(task.id)
                 }
                 todolistId={todolist.id}
                 status={task.status}
