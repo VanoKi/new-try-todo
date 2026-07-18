@@ -15,35 +15,35 @@ export const useTasks = (todolistId: string) => {
         mutationFn: (
             value: string
         ) => tasksApi.createTask(todolistId, value),
-    onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) });
-    },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) });
+        },
     });
 
-const deleteTaskMutation = useMutation({
-    mutationFn: (
-        taskId: string
-    ) => tasksApi.deleteTask(todolistId, taskId),
-    onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) }),
-});
+    const deleteTaskMutation = useMutation({
+        mutationFn: (
+            taskId: string
+        ) => tasksApi.deleteTask(todolistId, taskId),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) }),
+    });
 
-const updateTaskMutation = useMutation({
-    mutationFn: ({
-        taskId,
-        body,
-    }: {
-        taskId: string;
-        body: taskType;
-    }) => tasksApi.updateTask(todolistId, taskId, body),
-    onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) }),
-});
+    const updateTaskMutation = useMutation({
+        mutationFn: ({
+            taskId,
+            body,
+        }: {
+            taskId: string;
+            body: taskType;
+        }) => tasksApi.updateTask(todolistId, taskId, body),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks(todolistId) }),
+    });
 
-return {
-    tasks,
-    addTaskMutation,
-    deleteTaskMutation,
-    updateTaskMutation
-}
+    return {
+        tasks,
+        addTaskMutation,
+        deleteTaskMutation,
+        updateTaskMutation
+    }
 }
