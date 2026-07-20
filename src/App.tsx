@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { todolistsApi } from './Api/todolists.api';
 import './App.css';
+import { TodolistItem } from './components/Todolist';
 
 function App() {
   const { getTodolists } = todolistsApi
@@ -28,7 +29,8 @@ function App() {
         {todolists?.map(todolist => {
           return (
             <div key={todolist.id}>
-              {todolist.title}
+              <TodolistItem todolist={todolist}
+              />
             </div>
           )
         })}
