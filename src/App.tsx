@@ -1,11 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { todolistsApi } from './Api/todolists.api';
 import './App.css';
 import { TodolistItem } from './components/Todolist';
+import { Input } from './components/Input';
 
 function App() {
   const { getTodolists } = todolistsApi
   const { data: todolists, isLoading, isError } = useQuery({ queryKey: ['todolists'], queryFn: getTodolists })
+
+  const queryClient = useQueryClient()
+
+  const addTodolistMutation = useMutation({
+    mutationFn: (title: string) => todolistsApi.addTodolist(title),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todolists'] })
+  })
 
   if (isLoading) {
     return (
@@ -26,6 +34,10 @@ function App() {
   return (
     <>
       <section id='center'>
+        <Input
+          placeholder='add new TodoList'
+          addItem={(title) => addTodolistMutation.mutate(title)}
+        />
         {todolists?.map(todolist => {
           return (
             <div key={todolist.id}>

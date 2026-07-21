@@ -10,5 +10,12 @@ export const todolistsApi = {
     deleteTodolist: async (todolistId:string) => {
         const response = await instance.delete(`todo-lists/${todolistId}`)
         return response.data
+    },
+
+    addTodolist: async (title:string) => {
+        const response = await instance.post(`todo-lists`, {
+            title
+        })
+        return response.data
     }
 }
