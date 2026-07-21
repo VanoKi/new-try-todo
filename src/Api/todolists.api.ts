@@ -18,4 +18,8 @@ export const todolistsApi = {
         })
         return response.data
     }
+
+    // changeTodolistTitle: async () => {
+    //     const response = await instance.put()
+    // }
 }
