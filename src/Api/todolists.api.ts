@@ -7,19 +7,20 @@ export const todolistsApi = {
         return response.data
     },
 
-    deleteTodolist: async (todolistId:string) => {
+    deleteTodolist: async (todolistId: string) => {
         const response = await instance.delete(`todo-lists/${todolistId}`)
         return response.data
     },
 
-    addTodolist: async (title:string) => {
+    addTodolist: async (title: string) => {
         const response = await instance.post(`todo-lists`, {
             title
         })
         return response.data
-    }
+    },
 
-    // changeTodolistTitle: async () => {
-    //     const response = await instance.put()
-    // }
+    changeTodolistTitle: async ({ todolistId, title }: { todolistId: string, title: string }) => {
+        const response = await instance.put(`todo-lists/${todolistId}`, { title })
+        return response.data
+    }
 }

@@ -19,11 +19,19 @@ export const useTodolists = () => {
         }
     })
 
+    const changeTodolistMutation = useMutation({
+        mutationFn: ({todolistId, title}:{todolistId: string, title: string}) => todolistsApi.changeTodolistTitle({todolistId, title}),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['todolists']})
+        }
+    })
+
     return {
         todolists,
         isError,
         isLoading,
         addTodolistMutation,
-        deleteTodolistMutation
+        deleteTodolistMutation,
+        changeTodolistMutation
     }
 }
