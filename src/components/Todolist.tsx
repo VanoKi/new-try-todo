@@ -3,6 +3,7 @@ import { useTodolists } from "@/hooks/useTodolists";
 import { EditableSpan } from "./EditableSpan";
 import { TaskItem } from "./TaskItem";
 import { useGetTasks } from "@/hooks/useGetTasks";
+import type { TaskType } from "@/Api/tasks.types";
 
 type todolistItemProps = {
   todolist: TodolistType;
@@ -26,8 +27,8 @@ export const TodolistItem = ({
         <button onClick={() => deleteTodolistMutation.mutate(id)}>X</button>
       </h4>
       <ul>
-        {tasks?.map((task) => {
-          return <TaskItem title={task.title} onChange={() => {}} />;
+        {tasks?.map((task: TaskType) => {
+          return <TaskItem taskItem={task} onChange={() => {}} />;
         })}
       </ul>
     </>

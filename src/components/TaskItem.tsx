@@ -1,15 +1,17 @@
+import type { TaskType } from "@/Api/tasks.types";
 import { EditableSpan } from "@/components/EditableSpan.tsx";
 
-type Props = {
-  taskItem: string;
-  checkbox: boolean;
+type taskItemProps = {
+  taskItem: TaskType;
+  onChange: () => void;
 };
-export const TaskItem = (props: Props) => {
+export const TaskItem = (props: taskItemProps) => {
+  const { title, status, todolistId } = props.taskItem;
   return (
     <div>
       <input type="checkbox" />
       <EditableSpan
-        tiltle={"Task title"}
+        title={title}
         onChangeItem={(title) => console.log(title)}
       />
     </div>
