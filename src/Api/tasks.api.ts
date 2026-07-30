@@ -1,4 +1,5 @@
 import { instance } from "./instance";
+import type { TaskType } from "./tasks.types";
 
 export const taskApi = {
   getTasks: async (todolistId: string) => {
@@ -23,5 +24,10 @@ export const taskApi = {
     const response = await instance.post(`todo-lists/${todolistId}/tasks`, {title})
     return response.data.item
   },
+
+  updateTask: async ({todolistId, taskId, body}:{todolistId:string, taskId:string, body: TaskType}) => {
+    const response = await instance.put(`todo-lists/${todolistId}/tasks/${taskId}`, body)
+    return response.data.item
+  }
 
 };

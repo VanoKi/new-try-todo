@@ -1,4 +1,5 @@
 import { taskApi } from "@/Api/tasks.api"
+import type { TaskType } from "@/Api/tasks.types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export const useMutationTask = (todolistId:string) => {
@@ -14,9 +15,14 @@ export const useMutationTask = (todolistId:string) => {
             taskApi.createTask({todolistId, title}),
         onSuccess: () => {queryClient.invalidateQueries({queryKey: ['tasks', todolistId]})}
     })
+    const mutateTask = useMutation({
+        mutationFn: ({todolistId, taskId, body}:{todolistId:string, taskId:string, body: TaskType}) => taskApi.updateTask({todolistId, taskId, body}),
+        onSuccess: () => {queryClient.invalidateQueries({queryKey: ['tasks', todolistId]})}
+    })
 
     return {
         deleteTaskMutation,
-        createTaskMutation
+        createTaskMutation,
+        mutateTask
     }
 }

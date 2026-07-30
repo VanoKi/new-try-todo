@@ -7,13 +7,17 @@ type taskItemProps = {
 };
 export const TaskItem = (props: taskItemProps) => {
   const { title, status, todoListId, id } = props.taskItem;
-  const { deleteTaskMutation } = useMutationTask(todoListId)
+  const { deleteTaskMutation, mutateTask } = useMutationTask(todoListId)
   return (
     <div>
-      <input type="checkbox" checked={status == 2} />
+      <input 
+      type="checkbox" 
+      checked={status == 2} 
+      onChange={() => mutateTask.mutate({todolistId: todoListId, taskId: id, body: {...props.taskItem, status: status === 2 ? 0 : 2}})}
+      />
       <EditableSpan
         title={title}
-        onChangeItem={(title) => console.log(title)}
+        onChangeItem={(title) => mutateTask.mutate({todolistId: todoListId, taskId: id, body: {...props.taskItem, title}})}
       />
       <button
         onClick={() => deleteTaskMutation.mutate({ todolistId: todoListId, taskId: id })}
