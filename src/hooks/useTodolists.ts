@@ -1,44 +1,37 @@
-import { queryKeys } from "@/api/queryKeys";
-import { todolistApi } from "@/api/todolist.api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { todolistsApi } from "@/Api/todolists.api"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useTodolists = () => {
-    const queryClient = useQueryClient();
+    const { getTodolists } = todolistsApi
+    const { data: todolists, isLoading, isError } = useQuery({ queryKey: ['todolists'], queryFn: getTodolists })
 
-    const { data: todolists } = useQuery({
-        queryKey: queryKeys.todolists,
-        queryFn: () => todolistApi.getTodolists(),
-    });
+    const queryClient = useQueryClient()
 
     const addTodolistMutation = useMutation({
-        mutationFn: (value: string) => todolistApi.createTodolist(value),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-    });
+      mutationFn: (title: string) => todolistsApi.addTodolist(title),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todolists'] })
+    })
 
     const deleteTodolistMutation = useMutation({
-        mutationFn: (todolistId: string) => todolistApi.deleteTodolist(todolistId),
+        mutationFn: (todolistId:string) => todolistsApi.deleteTodolist(todolistId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
-        },
-    });
+            queryClient.invalidateQueries({queryKey: ['todolists']})
+        }
+    })
 
-    const updateTodolistMutation = useMutation({
-        mutationFn: ({ id, title }: { id: string; title: string }) =>
-          todolistApi.updateTodolist(id, title),
+    const changeTodolistMutation = useMutation({
+        mutationFn: ({todolistId, title}:{todolistId: string, title: string}) => todolistsApi.changeTodolistTitle({todolistId, title}),
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: queryKeys.todolists });
-        },
-      });
+            queryClient.invalidateQueries({queryKey: ['todolists']})
+        }
+    })
 
     return {
         todolists,
+        isError,
+        isLoading,
         addTodolistMutation,
         deleteTodolistMutation,
-        updateTodolistMutation
+        changeTodolistMutation
     }
 }
